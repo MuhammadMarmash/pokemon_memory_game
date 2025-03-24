@@ -33,6 +33,7 @@
 
 .character-card:active {
     transform: scale(0.95);
+
 }
 
 .card-image-container {
@@ -105,52 +106,48 @@
     animation: float 6s ease-in-out infinite;
 }
 
-.character-card:nth-child(odd) {
-    animation-delay: 0.5s;
+.character-card.correct-click {
+    animation: correct-click-animation 0.5s ease;
 }
 
-.character-card:nth-child(even) {
-    animation-delay: 1s;
+.character-card.wrong-click {
+    animation: wrong-click-animation 0.5s ease;
 }
 
-.character-card:nth-child(1) {
-    animation-delay: 0.1s;
+@keyframes correct-click-animation {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
-.character-card:nth-child(2) {
-    animation-delay: 0.2s;
-}
+@keyframes wrong-click-animation {
+    0% {
+        transform: translateX(0);
+    }
 
-.character-card:nth-child(3) {
-    animation-delay: 0.3s;
-}
+    25% {
+        transform: translateX(-10px);
+    }
 
-.character-card:nth-child(4) {
-    animation-delay: 0.4s;
-}
+    50% {
+        transform: translateX(10px);
+    }
 
-.character-card:nth-child(5) {
-    animation-delay: 0.5s;
-}
+    75% {
+        transform: translateX(-10px);
+    }
 
-.character-card:nth-child(6) {
-    animation-delay: 0.6s;
-}
-
-.character-card:nth-child(7) {
-    animation-delay: 0.7s;
-}
-
-.character-card:nth-child(8) {
-    animation-delay: 0.8s;
-}
-
-.character-card:nth-child(9) {
-    animation-delay: 0.9s;
-}
-
-.character-card:nth-child(10) {
-    animation-delay: 1s;
+    100% {
+        transform: translateX(0);
+    }
 }
 
 @media (max-width: 768px) {

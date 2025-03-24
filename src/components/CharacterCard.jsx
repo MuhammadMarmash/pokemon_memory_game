@@ -1,23 +1,39 @@
 import { useEffect, useState } from "react";
+import { useGameContext } from "../context/GameContext";
 import "../styles/CharacterCard.css";
 
-function CharacterCard(props) {
+function CharacterCard({ id }) {
     const [pokemonData, setPokemonData] = useState(null);
+    const [animationClass, setAnimationClass] = useState("");
+    const { clickedPokemons, handleClick } = useGameContext();
 
     useEffect(() => {
         async function fetchData() {
             const response = await fetch(
-                `https://pokeapi.co/api/v2/pokemon/${props.id}/`
+                `https://pokeapi.co/api/v2/pokemon/${id}/`
             );
             const data = await response.json();
             setPokemonData(data);
         }
         fetchData();
-    }, [props.id]);
+    }, [id]);
+
+    const handleCardClick = () => {
+        if (clickedPokemons.includes(id)) {
+            setAnimationClass("wrong-click");
+        } else {
+            setAnimationClass("correct-click");
+        }
+        setTimeout(() => {
+            handleClick(id);
+            setAnimationClass(""); // Reset animation class after 500ms
+        }, 500); // Delay the click handling to allow animation to play
+    };
+
     return (
         <div
-            className="character-card"
-            onClick={() => props.handleClick(props.id)}
+            className={`character-card ${animationClass}`}
+            onClick={handleCardClick}
         >
             <div className="card-image-container">
                 <img
