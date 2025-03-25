@@ -6,16 +6,30 @@ function CharacterCard({ id }) {
     const [pokemonData, setPokemonData] = useState(null);
     const [animationClass, setAnimationClass] = useState("");
     const { clickedPokemons, handleClick } = useGameContext();
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {
-        async function fetchData() {
-            const response = await fetch(
-                `https://pokeapi.co/api/v2/pokemon/${id}/`
-            );
-            const data = await response.json();
-            setPokemonData(data);
-        }
-        fetchData();
+        fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`, {
+            mode: "cors",
+        })
+            .then((response) => {
+                if (response.status >= 400) {
+                    throw new Error("server error");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setPokemonData(data);
+                setError(null);
+            })
+            .catch(() => {
+                setError("Failed to load Pokémon data.");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, [id]);
 
     const handleCardClick = () => {
@@ -30,25 +44,48 @@ function CharacterCard({ id }) {
         }, 500); // Delay the click handling to allow animation to play
     };
 
+    const handleImageLoad = () => {
+        setImageLoaded(true);
+    };
+
+    if (error)
+        return (
+            <div className={`character-card ${animationClass}`}>
+                <div className="card-image-container">
+                    <div className="image-placeholder"></div>
+                </div>
+                <div className="character-name">{error}</div>
+            </div>
+        );
+    if (loading)
+        return (
+            <div className={`character-card ${animationClass}`}>
+                <div className="card-image-container">
+                    <div className="image-placeholder"></div>
+                </div>
+                <div className="character-name">{"Loading..."}</div>
+            </div>
+        );
+
     return (
         <div
             className={`character-card ${animationClass}`}
             onClick={handleCardClick}
         >
             <div className="card-image-container">
-                <img
-                    src={
-                        !pokemonData
-                            ? "Loading..."
-                            : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png`
-                    }
-                    alt={!pokemonData ? "Loading..." : pokemonData.name}
-                    className="card-image"
-                />
+                <div className="image-placeholder"></div>
+                {pokemonData && (
+                    <img
+                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png`}
+                        alt={pokemonData.name + " image"}
+                        className={`card-image ${
+                            imageLoaded ? "loaded" : "loading"
+                        }`}
+                        onLoad={handleImageLoad}
+                    />
+                )}
             </div>
-            <div className="character-name">
-                {!pokemonData ? "Loading..." : pokemonData.name}
-            </div>
+            <div className="character-name">{pokemonData?.name}</div>
         </div>
     );
 }
